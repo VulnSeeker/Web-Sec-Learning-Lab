@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Security Learning Lab</title>
+    
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">WebSecLearn</div>
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Vulnerabilities</a></li>
+                    <li><a href="#">Solutions</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>Learn Web Security The Right Way</h1>
+            <p>Understand common database vulnerabilities, how to exploit them, and most importantly - how to fix them!</p>
+            <a href="#login-demo" class="btn">Try Login Demo</a>
+        </section>
+
+        <section class="card-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>SQL Injection</h2>
+                </div>
+                <div class="card-body">
+                    <p>SQL injection is a code injection technique that might destroy your database. It is one of the most common web hacking techniques.</p>
+                    <ul>
+                        <li>Bypass authentication</li>
+                        <li>Steal sensitive data</li>
+                        <li>Modify database contents</li>
+                        <li>Administrative operations on database</li>
+                    </ul>
+                    <a href="#" class="btn">Learn More</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>XSS Attacks</h2>
+                </div>
+                <div class="card-body">
+                    <p>Cross-site Scripting (XSS) is a security vulnerability that enables attackers to inject client-side scripts into web pages.</p>
+                    <ul>
+                        <li>Steal cookies and session tokens</li>
+                        <li>Deface websites</li>
+                        <li>Spread malware</li>
+                        <li>Phishing attacks</li>
+                    </ul>
+                    <a href="#" class="btn">Learn More</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>CSRF Attacks</h2>
+                </div>
+                <div class="card-body">
+                    <p>Cross-Site Request Forgery (CSRF) is an attack that forces authenticated users to submit requests to a web application.</p>
+                    <ul>
+                        <li>Change user credentials</li>
+                        <li>Make unauthorized transactions</li>
+                        <li>Data theft</li>
+                        <li>Account takeover</li>
+                    </ul>
+                    <a href="#" class="btn">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="login-demo" class="login-form">
+            <h2>Login Demonstration</h2>
+            <p>Try the vulnerable login form to understand SQL injection</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div id="loginResult" style="margin-top: 20px; padding: 10px; display: none;"></div>
+        </section>
+
+        <section class="backend-section">
+            <h2>Backend Simulation</h2>
+            <p>See how the backend processes your login request and how SQL injection works</p>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="vulnerable">Vulnerable Backend</div>
+                <div class="tab" data-tab="secure">Secure Backend</div>
+            </div>
+            
+            <div class="tab-content active" id="vulnerable-content">
+                <div class="code-example">
+                    // Vulnerable PHP backend code<br>
+                    $username = $_POST['username'];<br>
+                    $password = $_POST['password'];<br><br>
+                    
+                    // UNSAFE: Directly inserting user input into query<br>
+                    $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";<br>
+                    $result = mysqli_query($connection, $query);<br><br>
+                    
+                    if (mysqli_num_rows($result) > 0) {<br>
+                    &nbsp;&nbsp;// Login successful<br>
+                    &nbsp;&nbsp;echo "Welcome " . $username;<br>
+                    } else {<br>
+                    &nbsp;&nbsp;// Login failed<br>
+                    &nbsp;&nbsp;echo "Invalid credentials";<br>
+                    }
+                </div>
+                
+                <div class="simulation">
+                    <h3>Try SQL Injection Payloads:</h3>
+                    <div class="payloads">
+                        <div class="payload" onclick="tryPayload(this)">' OR '1'='1</div>
+                        <div class="payload" onclick="tryPayload(this)">admin'--</div>
+                        <div class="payload" onclick="tryPayload(this)">' UNION SELECT username, password FROM users--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="secure-content">
+                <div class="code-example">
+                    // Secure PHP backend code<br>
+                    $username = $_POST['username'];<br>
+                    $password = $_POST['password'];<br><br>
+                    
+                    // SAFE: Using prepared statements<br>
+                    $stmt = $connection->prepare("SELECT * FROM users WHERE username = ? AND password = ?");<br>
+                    $stmt->bind_param("ss", $username, $password);<br>
+                    $stmt->execute();<br>
+                    $result = $stmt->get_result();<br><br>
+                    
+                    if ($result->num_rows > 0) {<br>
+                    &nbsp;&nbsp;// Login successful<br>
+                    &nbsp;&nbsp;echo "Welcome " . htmlspecialchars($username);<br>
+                    } else {<br>
+                    &nbsp;&nbsp;// Login failed<br>
+                    &nbsp;&nbsp;echo "Invalid credentials";<br>
+                    }
+                </div>
+                
+                <div class="solution">
+                    <strong>Key Improvements:</strong>
+                    <ul>
+                        <li>Uses prepared statements with parameterized queries</li>
+                        <li>Input is treated as data, not executable code</li>
+                        <li>Output is sanitized with htmlspecialchars()</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="vulnerability-section">
+            <h2>Common Database Vulnerabilities</h2>
+            
+            <h3>1. SQL Injection</h3>
+            <p>This occurs when an attacker is able to insert a series of SQL statements into a query by manipulating user input.</p>
+            
+            <div class="code-example">
+                // Vulnerable code example<br>
+                $query = "SELECT * FROM users WHERE username = '" . $_POST['username'] . "' AND password = '" . $_POST['password'] . "'";
+            </div>
+            
+            <div class="warning">
+                <strong>Attack Example:</strong> Entering <code>' OR '1'='1</code> in the username field can bypass authentication.
+            </div>
+            
+            <h3>2. Insecure Direct Object References (IDOR)</h3>
+            <p>This occurs when an application provides direct access to objects based on user-supplied input.</p>
+            
+            <div class="code-example">
+                // Vulnerable code example<br>
+                $sql = "SELECT * FROM documents WHERE id = " . $_GET['doc_id'];
+            </div>
+            
+            <h3>3. Security Misconfigurations</h3>
+            <p>This can include improper configuration of the database server, default accounts with passwords, unnecessary services enabled, etc.</p>
+            
+            <h2>How to Find These Vulnerabilities</h2>
+            <ul>
+                <li>Manual testing of all input fields with special characters</li>
+                <li>Automated vulnerability scanning tools</li>
+                <li>Code review focused on database interactions</li>
+                <li>Penetration testing by ethical hackers</li>
+            </ul>
+            
+            <h2>Potential Damage from Database Attacks</h2>
+            <ul>
+                <li><strong>Data theft:</strong> Sensitive information like passwords, personal data, financial records can be stolen</li>
+                <li><strong>Data manipulation:</strong> Attackers can alter or delete important data</li>
+                <li><strong>Denial of Service:</strong> Databases can be overwhelmed or corrupted, making services unavailable</li>
+                <li><strong>Complete system compromise:</strong> In some cases, database vulnerabilities can lead to full server control</li>
+            </ul>
+            
+            <h2>How to Fix Database Vulnerabilities</h2>
+            
+            <h3>1. Use Prepared Statements (Parameterized Queries)</h3>
+            <div class="code-example">
+                // Secure code example using prepared statements<br>
+                $stmt = $pdo->prepare('SELECT * FROM users WHERE username = :username AND password = :password');<br>
+                $stmt->execute(['username' => $username, 'password' => $password]);<br>
+                $user = $stmt->fetch();
+            </div>
+            
+            <h3>2. Implement Proper Input Validation</h3>
+            <div class="code-example">
+                // Input validation example<br>
+                if (!preg_match("/^[a-zA-Z0-9]+$/", $username)) {<br>
+                &nbsp;&nbsp;die("Invalid username format");<br>
+                }
+            </div>
+            
+            <h3>3. Apply the Principle of Least Privilege</h3>
+            <p>Database accounts should have the minimum permissions needed to perform their function.</p>
+            
+            <h3>4. Regular Security Updates and Patches</h3>
+            <p>Keep your database management system and related software up to date.</p>
+            
+            <div class="solution">
+                <strong>Pro Tip:</strong> Always use ORMs (Object Relational Mappers) where possible as they generally provide built-in protection against SQL injection.
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Web Security Learning Lab - Created for educational purposes only</p>
+            <p>This is a demonstration project for GitHub to showcase security vulnerabilities and solutions</p>
+        </div>
+    </footer>

@@ -243,3 +243,67 @@
             <p>This is a demonstration project for GitHub to showcase security vulnerabilities and solutions</p>
         </div>
     </footer>
+    <script>
+    // Simulated database of users
+    const users = [
+        { id: 1, username: 'admin', password: 'admin123', email: 'admin@example.com' },
+        { id: 2, username: 'john', password: 'password123', email: 'john@example.com' },
+        { id: 3, username: 'sarah', password: 'securepass', email: 'sarah@example.com' }
+    ];
+
+    // Login form handling
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const resultDiv = document.getElementById('loginResult');
+
+        // Clear previous result
+        resultDiv.innerHTML = '';
+        resultDiv.style.display = 'block';
+
+        // Simulate SQL injection vulnerability
+        if (username.includes("' OR '1'='1") || password.includes("' OR '1'='1")) {
+            resultDiv.style.backgroundColor = '#ffebee';
+            resultDiv.style.color = '#c62828';
+            resultDiv.style.padding = '15px';
+            resultDiv.style.borderRadius = '5px';
+            resultDiv.innerHTML = '<h3>Vulnerability Triggered!</h3>' +
+                '<p>You successfully exploited an SQL injection vulnerability.</p>' +
+                '<p>The application constructed this vulnerable query:</p>' +
+                '<code>SELECT * FROM users WHERE username = \'' + username + '\' AND password = \'' + password + '\'</code>' +
+                '<p>This allows authentication bypass because the query always returns true.</p>' +
+                '<h4>All users in database:</h4>' +
+                '<pre>' + JSON.stringify(users, null, 2) + '</pre>';
+        } else if (username && password) {
+            // Normal login simulation
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                resultDiv.style.backgroundColor = '#e8f5e9';
+                resultDiv.style.color = '#2e7d32';
+                resultDiv.style.padding = '15px';
+                resultDiv.style.borderRadius = '5px';
+                resultDiv.innerHTML = '<h3>Login Successful!</h3>' +
+                    '<p>Welcome, <strong>' + user.username + '</strong>!</p>' +
+                    '<p>Email: ' + user.email + '</p>';
+            } else {
+                resultDiv.style.backgroundColor = '#fff3e0';
+                resultDiv.style.color = '#ef6c00';
+                resultDiv.style.padding = '15px';
+                resultDiv.style.borderRadius = '5px';
+                resultDiv.innerHTML = '<h3>Login Failed</h3>' +
+                    '<p>Invalid username or password. Please try again.</p>';
+            }
+        } else {
+            // Empty fields
+            resultDiv.style.backgroundColor = '#fbe9e7';
+            resultDiv.style.color = '#d84315';
+            resultDiv.style.padding = '15px';
+            resultDiv.style.borderRadius = '5px';
+            resultDiv.innerHTML = '<h3>Error</h3>' +
+                '<p>Please fill in both username and password fields.</p>';
+        }
+    });
+</script>
+
